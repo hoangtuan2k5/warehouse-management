@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quản lý kho</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Nunito:wght@400;600;700&display=swap');
+
+    :root {
+      --primary: #3A2747;
+      --secondary: #9E82B5;
+      --tertiary: #FF8AB8;
+      --neutral: #FFF3F7;
+      --surface: #FFFFFF;
+      --on-primary: #FFFFFF;
+      --line: #E8D6EF;
+      --shadow: rgba(58, 39, 71, 0.12);
+      --sm: 12px;
+      --md: 20px;
+      --lg: 32px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--neutral);
+      color: var(--primary);
+      font-family: "Nunito", sans-serif;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--secondary);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Fraunces", serif;
+      font-size: 2.25rem;
+      font-weight: 600;
+      letter-spacing: 0;
+      line-height: 1.1;
+    }
+
+    .db-pill {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--secondary);
+      padding: 8px 14px;
+      white-space: nowrap;
+      box-shadow: 0 10px 24px var(--shadow);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--lg);
+      padding: 24px;
+      box-shadow: 0 18px 40px var(--shadow);
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    h2 {
+      margin: 0;
+      font-family: "Fraunces", serif;
+      font-size: 1.45rem;
+      font-weight: 600;
+      letter-spacing: 0;
+      line-height: 1.15;
+    }
+
+    .count {
+      color: var(--secondary);
+      font-weight: 700;
+    }
+
+    .search {
+      width: min(360px, 100%);
+      border: 1px solid var(--line);
+      border-radius: var(--md);
+      padding: 12px 16px;
+      color: var(--primary);
+      background: var(--neutral);
+      outline: none;
+    }
+
+    .search:focus,
+    input:focus {
+      border-color: var(--tertiary);
+      box-shadow: 0 0 0 4px rgba(255, 138, 184, 0.18);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--md);
+    }
+
+    table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--secondary);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: var(--neutral);
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .sku {
+      color: var(--secondary);
+      font-weight: 700;
+    }
+
+    .qty {
+      width: 100px;
+      font-weight: 700;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .link-btn,
+    .ghost-btn,
+    .primary-btn {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .link-btn {
+      background: transparent;
+      color: var(--primary);
+      padding: 8px 6px;
+      font-weight: 700;
+    }
+
+    .link-btn:hover {
+      color: var(--secondary);
+    }
+
+    .ghost-btn {
+      background: var(--surface);
+      color: var(--primary);
+      border: 1px solid var(--line);
+      border-radius: var(--md);
+      padding: 11px 16px;
+      font-weight: 700;
+    }
+
+    .primary-btn {
+      background: var(--tertiary);
+      color: var(--on-primary);
+      border-radius: var(--md);
+      padding: 12px 20px;
+      font-weight: 800;
+      box-shadow: 0 12px 26px rgba(255, 138, 184, 0.34);
+    }
+
+    .primary-btn:hover {
+      filter: brightness(0.98);
+    }
+
+    form {
+      display: grid;
+      gap: 14px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--secondary);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--md);
+      padding: 12px 14px;
+      color: var(--primary);
+      background: var(--neutral);
+      outline: none;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .form-actions button {
+      flex: 1;
+    }
+
+    .message {
+      min-height: 28px;
+      margin: 14px 0 0;
+      color: var(--secondary);
+      font-weight: 700;
+    }
+
+    .empty {
+      padding: 28px;
+      color: var(--secondary);
+      text-align: center;
+    }
+
+    @media (max-width: 860px) {
+      .topbar,
+      .panel-head {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .db-pill,
+      .search {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .page {
+        width: min(100% - 16px, 1180px);
+        padding: 16px 0 28px;
+      }
+
+      h1 {
+        font-size: 1.9rem;
+      }
+
+      .panel {
+        border-radius: 22px;
+        padding: 16px;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar {
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+
+      .eyebrow {
+        margin-bottom: 4px;
+      }
+
+      .layout {
+        gap: 14px;
+      }
+
+      .layout > aside {
+        order: -1;
+      }
+
+      .db-pill {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .panel-head {
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .table-wrap {
+        overflow: visible;
+        border: 0;
+        border-radius: 0;
+      }
+
+      table,
+      thead,
+      tbody,
+      tr,
+      td {
+        display: block;
+        width: 100%;
+        min-width: 0;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tbody {
+        display: grid;
+        gap: 12px;
+      }
+
+      tr {
+        border: 1px solid var(--line);
+        border-radius: var(--md);
+        background: var(--surface);
+        padding: 12px;
+      }
+
+      td {
+        display: grid;
+        grid-template-columns: 96px minmax(0, 1fr);
+        gap: 12px;
+        align-items: center;
+        border-bottom: 1px solid var(--line);
+        padding: 10px 0;
+        overflow-wrap: anywhere;
+      }
+
+      td::before {
+        content: attr(data-label);
+        color: var(--secondary);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      td:last-child {
+        border-bottom: 0;
+      }
+
+      td:last-child::before {
+        content: "";
+      }
+
+      .qty {
+        width: auto;
+      }
+
+      .actions {
+        justify-content: stretch;
+      }
+
+      .link-btn {
+        flex: 1;
+        border: 1px solid var(--line);
+        border-radius: var(--sm);
+        padding: 10px 12px;
+        background: var(--neutral);
+      }
+
+      .empty {
+        display: block;
+        border: 1px solid var(--line);
+        border-radius: var(--md);
+      }
+
+      .empty::before {
+        content: "";
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Quản lý kho</p>
+        <h1>Quản lý kho hàng</h1>
+      </div>
+      <div class="db-pill" id="dbStatus">Đang kết nối CSDL...</div>
+    </header>
+
+    <section class="layout">
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Danh mục sản phẩm</h2>
+            <div class="count" id="productCount">0 sản phẩm</div>
+          </div>
+          <input class="search" id="search" type="search" placeholder="Tìm theo tên hoặc SKU">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Tên sản phẩm</th>
+                <th>SKU</th>
+                <th>Số lượng</th>
+                <th>Ngày tạo</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="rows">
+              <tr><td class="empty" colspan="5">Đang tải dữ liệu...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <div class="panel-head">
+          <h2 id="formTitle">Thêm sản phẩm</h2>
+        </div>
+        <form id="productForm">
+          <label>
+            Tên sản phẩm
+            <input id="name" name="name" autocomplete="off" required>
+          </label>
+          <label>
+            SKU
+            <input id="sku" name="sku" autocomplete="off" required>
+          </label>
+          <label>
+            Số lượng
+            <input id="quantity" name="quantity" type="number" min="0" value="0" required>
+          </label>
+          <div class="form-actions">
+            <button class="primary-btn" type="submit">Lưu sản phẩm</button>
+            <button class="ghost-btn" type="button" id="resetBtn">Làm mới</button>
+          </div>
+        </form>
+        <p class="message" id="message"></p>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const state = { products: [], editingId: null };
+
+    const rows = document.querySelector("#rows");
+    const count = document.querySelector("#productCount");
+    const message = document.querySelector("#message");
+    const formTitle = document.querySelector("#formTitle");
+    const form = document.querySelector("#productForm");
+    const search = document.querySelector("#search");
+    const dbStatus = document.querySelector("#dbStatus");
+
+    const fields = {
+      name: document.querySelector("#name"),
+      sku: document.querySelector("#sku"),
+      quantity: document.querySelector("#quantity")
+    };
+
+    async function request(url, options = {}) {
+      const response = await fetch(url, {
+        headers: { "Content-Type": "application/json" },
+        ...options
+      });
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        throw new Error(body.message || body.error || "Thao tác chưa thành công");
+      }
+      return response.json();
+    }
+
+    async function loadProducts() {
+      const q = encodeURIComponent(search.value.trim());
+      state.products = await request(`/api/products?q=${q}`);
+      renderProducts();
+    }
+
+    function renderProducts() {
+      count.textContent = `${state.products.length} sản phẩm`;
+      if (state.products.length === 0) {
+        rows.innerHTML = `<tr><td class="empty" colspan="5">Không có sản phẩm phù hợp</td></tr>`;
+        return;
+      }
+      rows.innerHTML = state.products.map(product => `
+        <tr>
+          <td data-label="Tên">${escapeHtml(product.name)}</td>
+          <td class="sku" data-label="SKU">${escapeHtml(product.sku)}</td>
+          <td class="qty" data-label="Số lượng">${product.quantity}</td>
+          <td data-label="Ngày tạo">${product.createdAt || ""}</td>
+          <td data-label="Thao tác">
+            <div class="actions">
+              <button class="link-btn" type="button" data-edit="${product.id}">Sửa</button>
+              <button class="link-btn" type="button" data-delete="${product.id}">Xóa</button>
+            </div>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function resetForm() {
+      state.editingId = null;
+      form.reset();
+      fields.quantity.value = 0;
+      formTitle.textContent = "Thêm sản phẩm";
+      message.textContent = "";
+    }
+
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+      const payload = {
+        name: fields.name.value.trim(),
+        sku: fields.sku.value.trim(),
+        quantity: Number(fields.quantity.value)
+      };
+      const url = state.editingId ? `/api/products/${state.editingId}` : "/api/products";
+      const method = state.editingId ? "PUT" : "POST";
+      try {
+        await request(url, { method, body: JSON.stringify(payload) });
+        message.textContent = state.editingId ? "Đã cập nhật sản phẩm" : "Đã thêm sản phẩm";
+        resetForm();
+        await loadProducts();
+      } catch (error) {
+        message.textContent = error.message;
+      }
+    });
+
+    rows.addEventListener("click", async event => {
+      const editId = event.target.dataset.edit;
+      const deleteId = event.target.dataset.delete;
+      if (editId) {
+        const product = state.products.find(item => item.id === Number(editId));
+        if (!product) return;
+        state.editingId = product.id;
+        fields.name.value = product.name;
+        fields.sku.value = product.sku;
+        fields.quantity.value = product.quantity;
+        formTitle.textContent = "Cập nhật sản phẩm";
+        message.textContent = "";
+      }
+      if (deleteId && confirm("Xóa sản phẩm này?")) {
+        try {
+          await request(`/api/products/${deleteId}`, { method: "DELETE" });
+          message.textContent = "Đã xóa sản phẩm";
+          resetForm();
+          await loadProducts();
+        } catch (error) {
+          message.textContent = error.message;
+        }
+      }
+    });
+
+    search.addEventListener("input", () => {
+      clearTimeout(search.timer);
+      search.timer = setTimeout(loadProducts, 220);
+    });
+
+    document.querySelector("#resetBtn").addEventListener("click", resetForm);
+
+    request("/api/db-check")
+      .then(data => {
+        dbStatus.textContent = `${data.database} · ${data.products} sản phẩm`;
+      })
+      .catch(() => {
+        dbStatus.textContent = "Chưa kết nối CSDL";
+      });
+
+    loadProducts().catch(error => {
+      rows.innerHTML = `<tr><td class="empty" colspan="5">${escapeHtml(error.message)}</td></tr>`;
+    });
+  </script>
+</body>
+</html>

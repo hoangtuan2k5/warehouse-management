@@ -1,0 +1,14 @@
+week1-springboot/
+phase-1-mysql-setup/
+*.jpg
+*.jpeg
+*.png
+*.gif
+backup.sql
+.m2/
+.agents/
+.codex/
+target/
+**/target/
+*.class
+*.log
